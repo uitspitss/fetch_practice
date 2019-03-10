@@ -12,8 +12,10 @@ export interface FormValues {
 interface FormProps {
   data: {};
   submit: (values: FormValues) => void;
-  fetch: (values: FormValues) => void;
+  fetchSaga: (values: FormValues) => void;
 }
+
+const delay = (ms: number) => new Promise(res => setTimeout(() => res, ms));
 
 const UrlForm: React.FC<InjectedFormikProps<FormProps, FormValues>> = ({
   touched,
@@ -22,8 +24,9 @@ const UrlForm: React.FC<InjectedFormikProps<FormProps, FormValues>> = ({
   isSubmitting,
   handleSubmit,
   handleChange,
+  setSubmitting,
   isValid,
-  fetch,
+  fetchSaga,
   data,
 }) => (
   <React.Fragment>
@@ -44,9 +47,29 @@ const UrlForm: React.FC<InjectedFormikProps<FormProps, FormValues>> = ({
         variant="contained"
         color="secondary"
         disabled={isSubmitting || !isValid}
-        onClick={() => fetch(values)}
+        onClick={async () => {
+          setSubmitting(true);
+          await delay(1000);
+          fetchSaga(values);
+          setSubmitting(false);
+        }}
       >
-        fetch api
+        fetch SAGA
+      </Button>
+      <br />
+      <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        disabled={isSubmitting || !isValid}
+        onClick={async () => {
+          setSubmitting(true);
+          await delay(1000);
+          fetchSaga(values);
+          setSubmitting(false);
+        }}
+      >
+        fetch THUNK
       </Button>
     </form>
     {JSON.stringify(data)}
@@ -54,16 +77,12 @@ const UrlForm: React.FC<InjectedFormikProps<FormProps, FormValues>> = ({
 );
 
 export default withFormik<FormProps, FormValues>({
-  mapValuesToPayload: ({ ...props }) => ({
-    url: props.url,
-  }),
   validationSchema: YUP.object().shape({
     url: YUP.string().required(),
   }),
-  handleSubmit: (values, { props, setSubmitting }) => {
-    setTimeout(() => {
-      props.submit(values);
-      setSubmitting(false);
-    }, 1000);
+  handleSubmit: async (values, { props, setSubmitting }) => {
+    await delay(1000);
+    props.submit(values);
+    setSubmitting(false);
   },
 })(UrlForm);

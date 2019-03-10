@@ -6,18 +6,20 @@ export interface State {
   data: {};
 }
 
-export const initialState: {} = {
-  data: {},
-};
+export const initialState: {} = {};
 
 const rootReducer = reducerWithInitialState(initialState)
   .case(actions.submitForm, (state, payload) => ({
     ...state,
-    data: { ...payload },
+    data: payload,
   }))
-  .case(actions.fetchApi.done, (state, payload) => ({
+  .case(actions.fetchApiSaga.done, (state, payload) => ({
     ...state,
-    data: { ...payload },
+    data: payload,
+  }))
+  .case(actions.fetchApiThunk.done, (state, payload) => ({
+    ...state,
+    data: payload,
   }));
 
 export default rootReducer;
